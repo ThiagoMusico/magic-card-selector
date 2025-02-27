@@ -11,29 +11,36 @@ import requests
 from bs4 import BeautifulSoup
 
 CARDS = [
-    '58830',
-    '69089',
-    '28455',
-    '3505',
-    '370',
-    '1920',
-    '52813',
-    '4901',
-    '61963',
-    '708',
-    '25866',
-    '6439',
-    '12286',
-    '55946',
-    '74225',
-    '30650',
-    '51748',
-    '6048',
-    '51791',
-    '4865',
-    '3415',
-    '30605',
-    '3295',
+    # '27122',    # Ajani's Chosen
+    # '55851',    # Archon of Sun's Grace
+    # '73061',    # Brotherhood Outcast
+    # '49249',    # Danitha Capashen, Paragon
+    # '27944',    # Darksteel Mutation
+    # '69764',    # Ghoulish Impetus
+    # '59500',    # Killian, Ink Duelist
+    # '894',      # Kor Spiritdancer
+    # '70255',    # Lord Skitter's Blessing
+    # '3203',     # Mesa Enchantress
+    # '55945',    # Minion's Return
+    # '7197',     # Nomad Mythmaker
+    # '70321',    # Not Dead After All
+    # '28649',    # Oppressive Rays
+    # '75621',    # Redress Fate
+    # '60216',    # Resurgent Belief
+    # '3190',     # Retether
+    # '55835',    # Rise to Glory
+    # '6258',     # Second Sunrise
+    # '28297',    # Silent Sentinel
+    # '11840',    # Spirit Link
+    # '54185',    # Starfield Mystic
+    # '57980',    # Timely Ward
+    # '55973',    # Transcendent Envoy
+    # '915',      # Umbra Mystic
+    # '10418',    # Winds of Rath
+    '5821',     # Nature's Will
+    '69124',    # Shelob, Child of Ungoliant
+    '69216',    # Shelob, Dread Weaver
+    '69046',    # Shelob's Ambush 
 ]
 
 LOJAS = [
@@ -44,19 +51,23 @@ LOJAS = [
     'epicgame',
     'meruru',
     'montshop',
-    'ligapokemon',
+    'nergeek',
     'power9',
+    'totemmtg',
+    'playeasycards'
 ]
 
 BASE_URLS = [f'https://www.{loja}.com.br/' for loja in LOJAS]
 
 QUALITIES = ['NM', 'SP', 'MP', 'HP', 'D']
 
+WANTED_QUALITIES = ['NM', 'SP', 'MP', 'HP']
+
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0'}
 
-quality_index = 5
-stock_index = 9
-price_index = 11
+QUALITY_INDEX = 5
+STOCK_INDEX = 9
+PRICE_INDEX = 11
 
 
 def beautify_stock(tag):
@@ -94,18 +105,19 @@ def scrape_on_url(url):
     min_price = math.inf
     best_card = {}
     for index, row in enumerate(table_rows):
-        stock = beautify_stock(row.contents[stock_index])
+        stock = beautify_stock(row.contents[STOCK_INDEX])
         if stock > 0:
-            price = beautify_price(row.contents[price_index])
-            quality = beautify_quality(row.contents[quality_index])
-            if price < min_price:
-                min_price = price
-                best_card = {
-                    'quality': quality,
-                    'price': price,
-                    'stock': stock,
-                    'index': index
-                }
+            price = beautify_price(row.contents[PRICE_INDEX])
+            quality = beautify_quality(row.contents[QUALITY_INDEX])
+            if quality in WANTED_QUALITIES:
+                if price < min_price:
+                    min_price = price
+                    best_card = {
+                        'quality': quality,
+                        'price': price,
+                        'stock': stock,
+                        'index': index
+                    }
     return best_card
 
 def get_cards_on_all_url(query_card_id):
